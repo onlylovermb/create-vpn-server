@@ -34,6 +34,31 @@ SUB_NAME=$(echo "$SUB_NAME" | tr -d '\r\n' | sed 's/^[[:space:]]*//;s/[[:space:]
 SUB_NAME=${SUB_NAME:-VPN}
 echo -e "${GREEN}订阅名称: $SUB_NAME${NC}"
 
+# 启动时选择 Reality 伪装域名；无交互终端时使用默认值
+configure_sni() {
+    local domain_input
+    local domain_pattern='^([a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\.)+[a-zA-Z]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?$'
+    SNI="www.apple.com"
+    if { exec 3< /dev/tty; } 2>/dev/null; then
+        while true; do
+            domain_input=""
+            if ! read -r -p "请输入 Reality 伪装域名 (回车默认 www.apple.com，如 www.microsoft.com / www.cloudflare.com；不含 https:// 或端口): " domain_input <&3; then
+                break
+            fi
+            domain_input=$(printf '%s' "$domain_input" | tr -d '\r' | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
+            domain_input=${domain_input:-www.apple.com}
+            if [ "${#domain_input}" -le 253 ] && [[ "$domain_input" =~ $domain_pattern ]]; then
+                SNI="$domain_input"
+                break
+            fi
+            echo -e "${YELLOW}域名格式无效，请输入纯域名，例如 www.apple.com${NC}"
+        done
+        exec 3<&-
+    fi
+    echo -e "${GREEN}Reality 伪装域名: $SNI${NC}"
+}
+configure_sni
+
 # ============================================
 # 第一步：安装 Xray + VLESS-Reality
 # ============================================
@@ -124,15 +149,6 @@ fi
 
 # 生成 Short ID
 SHORT_ID=$(openssl rand -hex 8)
-
-# 伪装域名列表
-FAKE_DOMAINS=(
-    "www.microsoft.com"
-    "www.apple.com"
-    "www.cloudflare.com"
-)
-RANDOM_INDEX=$((RANDOM % ${#FAKE_DOMAINS[@]}))
-SNI=${FAKE_DOMAINS[$RANDOM_INDEX]}
 
 echo -e "${GREEN}✓ 配置生成完成${NC}"
 echo -e "  - 代理端口: $RANDOM_PORT"
@@ -249,7 +265,7 @@ mkdir -p $SERVER_DIR
 cd $SERVER_DIR
 
 # 下载订阅服务器脚本（server.py、convert.py）
-SRC_URL="https://raw.githubusercontent.com/thcpdd/create-vpn-server/main/src"
+SRC_URL="https://raw.githubusercontent.com/onlylovermb/create-vpn-server/main/src"
 wget -q "$SRC_URL/server.py" "$SRC_URL/convert.py"
 
 if [ ! -f server.py ] || [ ! -f convert.py ]; then

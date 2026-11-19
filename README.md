@@ -24,8 +24,10 @@ Deploy a VLESS-Reality proxy on a Linux server with a single command, and get a 
 Run as root:
 
 ```bash
-bash <(curl -sL https://raw.githubusercontent.com/thcpdd/create-vpn-server/main/setup.sh)
+bash <(curl -sL https://raw.githubusercontent.com/onlylovermb/create-vpn-server/main/setup.sh)
 ```
+
+At startup, enter a subscription name and a Reality camouflage domain. Press Enter to use `www.apple.com`, or enter `www.microsoft.com`, `www.cloudflare.com`, or another reachable domain supporting TLS 1.3. Enter only the hostname, without `https://`, a path, or a port. Without an interactive terminal, the default domain is used automatically.
 
 When it finishes, copy the printed Clash subscription URL into your client:
 
@@ -53,7 +55,7 @@ The script runs in 5 steps:
 
 - Install [Xray-core](https://github.com/XTLS/Xray-core) if not already present
 - Generate a random port (10000–49999), UUID, X25519 key pair and Short ID
-- Pick a camouflage domain at random from a preset list (e.g. `www.microsoft.com`)
+- Use the camouflage domain entered at startup (default: `www.apple.com`)
 - Write `/usr/local/etc/xray/config.json`, validate it and start Xray
 - Open the ports via `ufw` or `firewalld` if either is detected
 

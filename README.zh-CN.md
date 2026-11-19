@@ -24,8 +24,10 @@
 以 root 身份运行：
 
 ```bash
-bash <(curl -sL https://raw.githubusercontent.com/thcpdd/create-vpn-server/main/setup.sh)
+bash <(curl -sL https://raw.githubusercontent.com/onlylovermb/create-vpn-server/main/setup.sh)
 ```
+
+启动时会提示输入订阅名称和 Reality 伪装域名。伪装域名直接回车默认使用 `www.apple.com`，也可输入 `www.microsoft.com`、`www.cloudflare.com` 或其他支持 TLS 1.3 的可达域名（仅域名，不含 `https://`、路径或端口）。没有交互终端时自动使用默认域名。
 
 执行完成后，将输出的 Clash 订阅地址填入客户端：
 
@@ -53,7 +55,7 @@ bash <(curl -sL https://raw.githubusercontent.com/thcpdd/create-vpn-server/main/
 
 - 安装 [Xray-core](https://github.com/XTLS/Xray-core)（若尚未安装）
 - 生成随机端口（10000–49999）、UUID、X25519 密钥对、Short ID
-- 从预设列表随机选取一个伪装域名（如 `www.microsoft.com`）
+- 使用启动时输入的伪装域名，默认为 `www.apple.com`
 - 写入 `/usr/local/etc/xray/config.json`，验证配置并启动 Xray
 - 检测到 `ufw` 或 `firewalld` 时自动放行端口
 
